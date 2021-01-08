@@ -23,8 +23,8 @@
 #ifndef DISPSYS_INFO_H
 #define DISPSYS_INFO_H
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
 
 #define MAX_SIZE 32
@@ -76,4 +76,3 @@ typedef struct DrawTime {
 } DrawTime;
 
 #endif
-

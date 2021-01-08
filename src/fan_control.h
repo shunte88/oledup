@@ -28,12 +28,11 @@
 #define TEMP_FILE "/sys/class/thermal/thermal_zone0/temp"
 
 bool loadFanConfiguration(void);
-bool fanControl(double temperature, bool* goser);
+bool fanControl(double temperature, bool *goser);
 // "construct" serial comms
 bool init_serial(const char *serial_name);
-int send_serial(const char* data);
+int send_serial(const char *data);
 // "destroy" serial comms
 int __init_serial(void);
 
 #endif
-
