@@ -200,8 +200,9 @@ void fanTimer(size_t timer_id, void *user_data) {
             // Convert to floating point printing
             temp = atoi(buf) / 1000.0;
             bool fan = fanControl(temp, &goser);
-            // should use fan icon - fix this
-            sprintf(attr->value, " %.1fC %s", temp, ((fan) ? "On" : "Off"));
+            // update temperature icon indicating fan on/off
+            sprintf(attr->value, " %.1fC", temp));
+            attr->icon = ((fan) ? IT_CPU_FAN_TEMP : IT_CPU_TEMP);
         }
     }
     close(fh);
