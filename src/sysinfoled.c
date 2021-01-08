@@ -45,6 +45,8 @@
 #include <time.h>
 #include <unistd.h>
 
+#define PROGRAM_NAME "sysinfoled"
+
 void dodelay(uint16_t d) { usleep(d * 1000); }
 
 bool goser = false;
@@ -106,6 +108,37 @@ void putIcon(DrawAttr *disp) {
     memcpy(dest, deskpi28x28() + start, sizeof dest);
     ssd1306_fillRect(2, 2, szw, szh, BLACK);
     ssd1306_drawBitmap(2, 2, dest, szw, szh, WHITE);
+}
+
+void getIP(DrawAttr *attr) {
+
+    struct ifaddrs *ifAddrStruct = NULL;
+    void *tmpAddrPtr = NULL;
+    getifaddrs(&ifAddrStruct);
+
+    // Get IP address
+    while (ifAddrStruct != NULL) {
+        if (ifAddrStruct->ifa_addr != NULL &&
+            ifAddrStruct->ifa_addr->sa_family == AF_INET) {
+            // check it is IP4 is a valid IP4 Address
+            tmpAddrPtr =
+                &((struct sockaddr_in *)ifAddrStruct->ifa_addr)->sin_addr;
+            char addressBuffer[INET_ADDRSTRLEN];
+            inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
+            if (strcmp(ifAddrStruct->ifa_name, "eth0") == 0) {
+                sprintf(attr->value, "%s", addressBuffer);
+                attr->icon = IT_NULL_ICON;
+                break;
+            } else if (strcmp(ifAddrStruct->ifa_name, "wlan0") == 0) {
+                sprintf(attr->value, "%s", addressBuffer);
+                attr->icon = IT_NULL_ICON;
+                break;
+            } else {
+                sprintf(attr->value, "???.???.???.???");
+            }
+        }
+        ifAddrStruct = ifAddrStruct->ifa_next;
+    }
 }
 
 void drawIP(DrawAttr *disp) {
@@ -220,15 +253,16 @@ int main(void) {
     struct DrawAttr attrs[6] = {
         {true, {30, 8}, 128, 24, IT_CPU_INFO, true, {0}, INIT_ATTR_VALUE}, // AT_CPU_INFO
         {true, {30, 8}, 128, 24, IT_CPU_TEMP, true, {0}, INIT_ATTR_VALUE}, // AT_CPU_TEMP
-        {true, {1, 8}, 128, 24, IT_NET_ETHER, true, {0}, INIT_ATTR_VALUE}, // AT_NET_INFO
         {false, {30, 8}, 128, 24, IT_MEM_INFO, true, {0}, INIT_ATTR_VALUE}, // AT_MEM_INFO
         {false, {30, 8}, 128, 24, IT_DISK_INFO, true, {0}, INIT_ATTR_VALUE}, // AT_DISK_INFO
+        {true, {0, 8}, 128, 24, IT_NET_ETHER, true, {0}, INIT_ATTR_VALUE}, // AT_NET_INFO
         {true, {2, 2}, 128, 26, IT_NULL_ICON, false, {0}, INIT_ATTR_VALUE}}; // AT_CLOCK_INFO
     // clang-format on
 
     loadFanConfiguration();
     goser = init_serial("/dev/ttyUSB0");
 
+    getIP(&attrs[AT_NET_INFO]);
     fanTimerLogic(&attrs[AT_CPU_TEMP]);
     size_t fTimer;
     fTimer = timer_start(1000, fanTimer, TIMER_PERIODIC,
@@ -247,10 +281,6 @@ int main(void) {
     struct sysinfo sys_info;
     struct statfs disk_info;
     struct memInfo mem_info;
-
-    struct ifaddrs *ifAddrStruct = NULL;
-    void *tmpAddrPtr = NULL;
-    getifaddrs(&ifAddrStruct);
 
     DrawTime dt = {.charWidth = 18,
                    .charHeight = 26,
@@ -310,36 +340,6 @@ int main(void) {
                 sprintf(attrs[AT_MEM_INFO].value, " %s/%s", usedBuff,
                         totalBuff);
 
-                // Get IP address
-                while (ifAddrStruct != NULL) {
-                    if (ifAddrStruct->ifa_addr != NULL &&
-                        ifAddrStruct->ifa_addr->sa_family == AF_INET) {
-                        // check it is IP4 is a valid IP4 Address
-                        tmpAddrPtr =
-                            &((struct sockaddr_in *)ifAddrStruct->ifa_addr)
-                                 ->sin_addr;
-                        char addressBuffer[INET_ADDRSTRLEN];
-                        inet_ntop(AF_INET, tmpAddrPtr, addressBuffer,
-                                  INET_ADDRSTRLEN);
-                        if (strcmp(ifAddrStruct->ifa_name, "eth0") == 0) {
-                            sprintf(attrs[AT_NET_INFO].value, "%s",
-                                    addressBuffer);
-                            attrs[AT_NET_INFO].icon = IT_NULL_ICON;
-                            break;
-                        } else if (strcmp(ifAddrStruct->ifa_name, "wlan0") ==
-                                   0) {
-                            sprintf(attrs[AT_NET_INFO].value, "%s",
-                                    addressBuffer);
-                            attrs[AT_NET_INFO].icon = IT_NULL_ICON;
-                            break;
-                        } else {
-                            sprintf(attrs[AT_NET_INFO].value,
-                                    "???.???.???.???");
-                        }
-                    }
-                    ifAddrStruct = ifAddrStruct->ifa_next;
-                }
-
                 // Read disk space, remaining/total space
                 statfs("/", &disk_info);
 
@@ -352,6 +352,7 @@ int main(void) {
                 sprintf(attrs[AT_DISK_INFO].value, " %s/%s", usedBuff,
                         totalBuff);
 
+                // clang-format off
 // less of a helper with the idx based impl. clean enough so a keeper
 #define dispAttr(disp)                                                         \
     if (strcmp(disp.value, disp.lastval) != 0) {                               \
@@ -366,6 +367,7 @@ int main(void) {
         ssd1306_fillRect(disp.pos.x, disp.pos.y, disp.w, disp.h, BLACK);       \
         ssd1306_drawText(disp.pos.x, disp.pos.y, disp.value);                  \
     }
+                // clang-format on
 
                 if (attrs[frame].visible) {
                     if (frame == AT_NET_INFO) {
@@ -383,7 +385,9 @@ int main(void) {
                     }
                 }
 
-#undef dispAttr
+                // clang-format off
+                #undef dispAttr
+                // clang-format on
             }
             dodelay(1000);
         }
