@@ -220,9 +220,9 @@ int main(void) {
     struct DrawAttr attrs[6] = {
         {true, {30, 8}, 128, 24, IT_CPU_INFO, true, {0}, INIT_ATTR_VALUE}, // AT_CPU_INFO
         {true, {30, 8}, 128, 24, IT_CPU_TEMP, true, {0}, INIT_ATTR_VALUE}, // AT_CPU_TEMP
+        {true, {1, 8}, 128, 24, IT_NET_ETHER, true, {0}, INIT_ATTR_VALUE}, // AT_NET_INFO
         {false, {30, 8}, 128, 24, IT_MEM_INFO, true, {0}, INIT_ATTR_VALUE}, // AT_MEM_INFO
         {false, {30, 8}, 128, 24, IT_DISK_INFO, true, {0}, INIT_ATTR_VALUE}, // AT_DISK_INFO
-        {true, {1, 8}, 128, 24, IT_NET_ETHER, true, {0}, INIT_ATTR_VALUE}, // AT_NET_INFO
         {true, {2, 2}, 128, 26, IT_NULL_ICON, false, {0}, INIT_ATTR_VALUE}}; // AT_CLOCK_INFO
     // clang-format on
 

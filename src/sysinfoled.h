@@ -44,9 +44,9 @@ enum iconType {
 enum attrType {
     AT_CPU_INFO = 0,
     AT_CPU_TEMP,
+    AT_NET_INFO,
     AT_MEM_INFO,
     AT_DISK_INFO,
-    AT_NET_INFO,
     AT_CLOCK_INFO,
 };
 
