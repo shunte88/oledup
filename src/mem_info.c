@@ -20,19 +20,19 @@
  *
  */
 
+#include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
-#include <fcntl.h>
 
 #include "mem_info.h"
 
-void scanMemoryInfo(memInfo* this) {
+void scanMemoryInfo(memInfo *this) {
 
     unsigned long swapFree = 0;
     unsigned long shmem = 0;
     unsigned long sreclaimable = 0;
 
-/*
+    /*
 const char *
 getramu(void)
 {
@@ -49,7 +49,7 @@ getramu(void)
 }
 */
 
-    FILE* file = fopen("/proc/meminfo", "r");
+    FILE *file = fopen("/proc/meminfo", "r");
     if (file == NULL) {
         printf("Cannot open /proc/meminfo\n");
         this->totalMem = 0;
@@ -58,53 +58,47 @@ getramu(void)
         char buffer[128];
         while (fgets(buffer, 128, file)) {
 
-            #define readAttr(label, metric)                          \
-             if (String_startsWith(buffer, label)) {                 \
-                 sscanf(buffer + strlen(label), " %ld kB", &metric); \
-                 break;                                              \
-             }
+#define readAttr(label, metric)                                                \
+    if (String_startsWith(buffer, label)) {                                    \
+        sscanf(buffer + strlen(label), " %ld kB", &metric);                    \
+        break;                                                                 \
+    }
 
-            switch(buffer[0]) {
+            switch (buffer[0]) {
                 case 'M':
                     readAttr("MemTotal:", this->totalMem);
                     readAttr("MemFree:", this->freeMem);
                     break;
-                case 'B':
-                    readAttr("Buffers:", this->buffersMem);
-                    break;
-                case 'C':
-                    readAttr("Cached:", this->cachedMem);
-                    break;
+                case 'B': readAttr("Buffers:", this->buffersMem); break;
+                case 'C': readAttr("Cached:", this->cachedMem); break;
                 case 'S':
                     switch (buffer[1]) {
                         case 'w':
                             readAttr("SwapTotal:", this->totalSwap);
                             readAttr("SwapFree:", swapFree);
                             break;
-                        case 'h':
-                            readAttr("Shmem:", shmem);
-                            break;
+                        case 'h': readAttr("Shmem:", shmem); break;
                         case 'R':
                             readAttr("SReclaimable:", sreclaimable);
                             break;
                     }
-                break;
+                    break;
             }
-            #undef readAttr
+#undef readAttr
         }
     }
 
     fclose(file);
 
-    this->usedMem = (unsigned long*)this->totalMem - (unsigned long*)this->freeMem;
+    this->usedMem =
+        (unsigned long *)this->totalMem - (unsigned long *)this->freeMem;
     this->cachedMem = this->cachedMem + sreclaimable - shmem;
     this->usedSwap = this->totalSwap - swapFree;
-
 }
 
-int readableUnits(char* buffer, unsigned long value, size_t size) {
+int readableUnits(char *buffer, unsigned long value, size_t size) {
 
-    const char* prefix = "KMGTPEZY";
+    const char *prefix = "KMGTPEZY";
     long powi = 1;
     long powj = 1, precision = 2;
 
@@ -125,6 +119,6 @@ int readableUnits(char* buffer, unsigned long value, size_t size) {
         if (value / powi < powj)
             break;
     }
-    return snprintf(buffer, size, "%.*f%c", precision, (double) value / powi, *prefix);
-
+    return snprintf(buffer, size, "%.*f%c", precision, (double)value / powi,
+                    *prefix);
 }

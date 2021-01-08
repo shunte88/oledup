@@ -6,6 +6,9 @@
 *.ko
 *.obj
 *.elf
+# parked
+*.safe
+*.save
 
 # Linker output
 *.ilk
@@ -35,6 +38,8 @@
 *.i*86
 *.x86_64
 *.hex
+# driver exec
+sysinfoled
 
 # Debug files
 *.dSYM/

@@ -1,0 +1,8 @@
+clear
+#sudo systemctl stop oledup && sudo systemctl disable oledup
+#sudo cp /home/pi/oledup/oledup.service /etc/systemd/system/
+sudo systemctl stop oledup
+rm -f sysinfoled
+#sudo make all && cp sysinfoled /home/pi/oledup/ && sudo systemctl enable oledup && sudo systemctl start oledup
+sudo make all && cp sysinfoled /home/pi/oledup/ && sudo systemctl start oledup
+

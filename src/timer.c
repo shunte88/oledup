@@ -185,4 +185,3 @@ void *_timer_thread(void *data) {
 
     return NULL;
 }
-

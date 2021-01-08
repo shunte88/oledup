@@ -37,6 +37,7 @@ enum iconType {
     IT_CPU_INFO,
     IT_MEM_INFO,
     IT_DISK_INFO,
+    IT_CPU_FAN_TEMP = 0,
     IT_NULL_ICON,
 };
 
