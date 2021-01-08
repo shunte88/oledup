@@ -1,8 +1,19 @@
 clear
-#sudo systemctl stop oledup && sudo systemctl disable oledup
-#sudo cp /home/pi/oledup/oledup.service /etc/systemd/system/
-sudo systemctl stop oledup
-rm -f sysinfoled
-#sudo make all && cp sysinfoled /home/pi/oledup/ && sudo systemctl enable oledup && sudo systemctl start oledup
-sudo make all && cp sysinfoled /home/pi/oledup/ && sudo systemctl start oledup
 
+if[["1"=="$1"]]; then
+    echo "Deploy daemon"
+    sudo systemctl stop oledup && sudo systemctl disable oledup
+    sudo cp /home/pi/oledup/oledup.service /etc/systemd/system/
+else
+    echo "Stop daemon"
+    sudo systemctl stop oledup
+fi
+rm -f sysinfoled
+echo "Compile and deploy driver"
+if[["1"=="$1"]]; then
+    sudo make all && cp sysinfoled /home/pi/oledup/ && sudo systemctl enable oledup && sudo systemctl start oledup
+else
+    sudo make all && cp sysinfoled /home/pi/oledup/ && sudo systemctl start oledup
+fi
+echo "Done."
+echo  "Please reboot now"
