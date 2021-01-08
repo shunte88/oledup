@@ -1,0 +1,16 @@
+[Unit]
+Description=OLED Info And PWM Fan Controller
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/bash /home/pi/oledup/oledupf.sh
+WorkingDirectory=/home/pi/oledup
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=root
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
