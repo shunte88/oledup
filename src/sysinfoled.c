@@ -180,10 +180,7 @@ void drawTime(DrawAttr *disp, DrawTime *dt) {
     strcpy(disp->lastval, disp->value);
 }
 
-// read CPU temperature and execute fan controller
-void fanTimer(size_t timer_id, void *user_data) {
-
-    DrawAttr *attr = (DrawAttr *)user_data;
+void fanTimerLogic(DrawAttr *attr) {
     double temp = 0.00;
     char buf[MAX_SIZE];
 
@@ -208,63 +205,34 @@ void fanTimer(size_t timer_id, void *user_data) {
     close(fh);
 }
 
+// read CPU temperature and execute fan controller
+void fanTimer(size_t timer_id, void *user_data) {
+
+    DrawAttr *attr = (DrawAttr *)user_data;
+    fanTimerLogic(attr);
+}
+
 int main(void) {
 
     attach_signal_handler();
 
-    struct DrawAttr attrs[6] = {{true,
-                                 {30, 8},
-                                 128,
-                                 24,
-                                 IT_CPU_INFO,
-                                 true,
-                                 {0},
-                                 INIT_ATTR_VALUE}, // AT_CPU_INFO
-                                {true,
-                                 {30, 8},
-                                 128,
-                                 24,
-                                 IT_CPU_TEMP,
-                                 true,
-                                 {0},
-                                 INIT_ATTR_VALUE}, // AT_CPU_TEMP
-                                {false,
-                                 {30, 8},
-                                 128,
-                                 24,
-                                 IT_MEM_INFO,
-                                 true,
-                                 {0},
-                                 INIT_ATTR_VALUE}, // AT_MEM_INFO
-                                {false,
-                                 {30, 8},
-                                 128,
-                                 24,
-                                 IT_DISK_INFO,
-                                 true,
-                                 {0},
-                                 INIT_ATTR_VALUE}, // AT_DISK_INFO
-                                {true,
-                                 {1, 8},
-                                 128,
-                                 24,
-                                 IT_NET_ETHER,
-                                 true,
-                                 {0},
-                                 INIT_ATTR_VALUE}, // AT_NET_INFO
-                                {true,
-                                 {2, 2},
-                                 128,
-                                 26,
-                                 IT_NULL_ICON,
-                                 false,
-                                 {0},
-                                 INIT_ATTR_VALUE}}; // AT_CLOCK_INFO
+    // clang-format off
+    struct DrawAttr attrs[6] = {
+        {true, {30, 8}, 128, 24, IT_CPU_INFO, true, {0}, INIT_ATTR_VALUE}, // AT_CPU_INFO
+        {true, {30, 8}, 128, 24, IT_CPU_TEMP, true, {0}, INIT_ATTR_VALUE}, // AT_CPU_TEMP
+        {false, {30, 8}, 128, 24, IT_MEM_INFO, true, {0}, INIT_ATTR_VALUE}, // AT_MEM_INFO
+        {false, {30, 8}, 128, 24, IT_DISK_INFO, true, {0}, INIT_ATTR_VALUE}, // AT_DISK_INFO
+        {true, {1, 8}, 128, 24, IT_NET_ETHER, true, {0}, INIT_ATTR_VALUE}, // AT_NET_INFO
+        {true, {2, 2}, 128, 26, IT_NULL_ICON, false, {0}, INIT_ATTR_VALUE}}; // AT_CLOCK_INFO
+    // clang-format on
 
     loadFanConfiguration();
     goser = init_serial("/dev/ttyUSB0");
+
+    fanTimerLogic(&attrs[AT_CPU_TEMP]);
     size_t fTimer;
-    fTimer = timer_start(1000, fanTimer, TIMER_PERIODIC, (void *)&attrs[1]);
+    fTimer = timer_start(1000, fanTimer, TIMER_PERIODIC,
+                         (void *)&attrs[AT_CPU_TEMP]);
 
     time_t time_now;
     struct tm *loctm;
