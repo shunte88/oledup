@@ -37,7 +37,7 @@ Solder the hookup wires to the OLED and place it into the slot. Hot glue can be 
 
 The driver controls the fan and to display system attributes, teperature, load, and atintervals the time.
 Icons reflect the current temperature, fan control, and system memory and disk usage.
-The OLED screen while being 128x32 px is only abut 15mm in height, icons and large fonts are used to presentinformation. A custom font was developed to display network information.
+The OLED screen while being 128x32 px is only about 15mm in height, icons and large fonts are used to present information, and a custom font was developed to display network information.  The font is needed to display IP addressesto a maximum width of 15 characters.
 
 Install the driver
 
@@ -45,6 +45,6 @@ cd to the src folder
 and execute the following
 sudo bash comploy 1
 
-# TODO
+## TODO
 
 Additional modifications may be made to add a DAC to the enclosure and the screen will be extended to display audio details.
