@@ -25,7 +25,7 @@ You may also polish the area in front of the routed window on the face of the pa
 
 Multiple layers of painters tape is used to protect areas of thepanel that should not be modified when polishing.
 
-A hand held router was used forthis task buta cleaner approach would be to use a CNC to route the channel.
+A hand held router was used for this task but a cleaner approach would be to use a CNC to route the channel.
 
 The deskpi provides an extension riser for the pi's GPIO. Solder thin flexible hookup wires to the 3V3, GND, SLA and SLC pins on the riser. There is just enough room between the riser and the CPU fan to route the wires. Hot glue can be used to secure the wires further or a simple thin plastic shim slid between the riser and the cooler.
 
