@@ -177,7 +177,7 @@ void drawIP(DrawAttr *disp) {
 void drawTime(DrawAttr *disp, DrawTime *dt) {
 
     int x = dt->pos.x;
-    size_t ll = strlen(disp->lastval);
+    size_t ll = strlen(disp->_value);
     const int sepWidth = 6;
     const int offset = 6;
     const int tsize = 3;
@@ -185,19 +185,19 @@ void drawTime(DrawAttr *disp, DrawTime *dt) {
     for (size_t i = 0; i < strlen(disp->value); i++) {
         // selective updates, less "blink"
         int w = dt->charWidth;
-        if ((i > ll) || (disp->value[i] != disp->lastval[i])) {
-            if ((i > ll) || ('X' == disp->lastval[i])) {
-                w = ((disp->lastval[i] == ':') || (disp->lastval[i] == ' '))
+        if ((i > ll) || (disp->value[i] != disp->_value[i])) {
+            if ((i > ll) || ('X' == disp->_value[i])) {
+                w = ((disp->_value[i] == ':') || (disp->_value[i] == ' '))
                         ? sepWidth
                         : dt->charWidth;
                 ssd1306_fillRect((w == sepWidth) ? x - offset : x,
                                  dt->pos.y - 1, w, dt->charHeight + 2, BLACK);
             } else {
-                w = ((disp->lastval[i] == ':') || (disp->lastval[i] == ' '))
+                w = ((disp->_value[i] == ':') || (disp->_value[i] == ' '))
                         ? sepWidth
                         : dt->charWidth;
                 ssd1306_drawChar((w == sepWidth) ? x - offset : x, dt->pos.y,
-                                 disp->lastval[i], BLACK, tsize); // soft erase
+                                 disp->_value[i], BLACK, tsize); // soft erase
             }
             w = ((disp->value[i] == ':') || (disp->value[i] == ' '))
                     ? sepWidth
@@ -210,7 +210,30 @@ void drawTime(DrawAttr *disp, DrawTime *dt) {
                 : dt->charWidth;
         x += w;
     }
-    strcpy(disp->lastval, disp->value);
+    strcpy(disp->_value, disp->value);
+}
+
+void diskLogic(DrawAttr *attr) {
+
+    unsigned int storage = 0.00;
+    char buf[MAX_LINE_BUFFER];
+
+    // Read CPU temperature
+    int fh = open(PARTITIONS_FILE, O_RDONLY);
+    if (fh < 0) {
+        storage = 0.00;
+        printf("failed to open %s\n", PARTITIONS_FILE);
+    } else {
+        if (read(fh, buf, sizeof(buf)) < 0) {
+            storage = 0.00;
+            printf("failed to read temp\n");
+        } else {
+            // Convert to floating point printing
+            storage = atoi(buf) / 1000.0;
+            sprintf(attr->value, " %d", storage);
+        }
+    }
+    close(fh);
 }
 
 void fanTimerLogic(DrawAttr *attr) {
@@ -308,17 +331,15 @@ int main(void) {
 
                 // prime for reset
                 for (int initr = 0; initr < 4; initr++)
-                    if (0 == attrs[initr].lastval[0])
-                        continue;
-                    else
-                        attrs[initr].lastval[0] = 0;
+                    if (0 != attrs[initr]._value[0])
+                        attrs[initr]._value[0] = 0;
 
                 continue;
 
             } else {
 
                 ssd1306_setTextSize(2);
-                strcpy(attrs[AT_CLOCK_INFO].lastval, INIT_ATTR_VALUE);
+                strcpy(attrs[AT_CLOCK_INFO]._value, INIT_ATTR_VALUE);
 
                 paint = false;
                 int lastframe = frame;
@@ -355,8 +376,8 @@ int main(void) {
                 // clang-format off
 // less of a helper with the idx based impl. clean enough so a keeper
 #define dispAttr(disp)                                                         \
-    if (strcmp(disp.value, disp.lastval) != 0) {                               \
-        if (strcmp(disp.lastval, INIT_ATTR_VALUE) != 0)                        \
+    if (strcmp(disp.value, disp._value) != 0) {                               \
+        if (strcmp(disp._value, INIT_ATTR_VALUE) != 0)                        \
             paint = true;                                                      \
         if (disp.forceClear) {                                                 \
             ssd1306_clearDisplay();                                            \
@@ -377,7 +398,7 @@ int main(void) {
                     } else {
                         dispAttr(attrs[frame]); // display icon and data
                         if (frame < AT_NET_INFO)
-                            strcpy(attrs[frame].lastval, attrs[frame].value);
+                            strcpy(attrs[frame]._value, attrs[frame].value);
                     }
                     // Refresh display
                     if (paint) {
@@ -418,10 +439,10 @@ int main(void) {
 
             // prime for repainting
             for (int initr = 0; initr < 5; initr++)
-                if (0 == attrs[initr].lastval[0])
+                if (0 == attrs[initr]._value[0])
                     continue;
                 else
-                    attrs[initr].lastval[0] = 0;
+                    attrs[initr]._value[0] = 0;
         }
     }
 

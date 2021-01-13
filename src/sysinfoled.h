@@ -28,7 +28,12 @@
 #include <string.h>
 
 #define MAX_SIZE 32
+#define MAX_LINE_BUFFER 1024
 #define INIT_ATTR_VALUE "XXXXXXXX"
+// Disk partition detail and diskstats
+#define PARTITIONS_FILE "/proc/partitions" // names lookup
+#define DISKSTATS_FILE "/proc/diskstats"   // statistics
+// type lookup
 
 enum iconType {
     IT_CPU_TEMP = 0,
@@ -63,7 +68,7 @@ typedef struct DrawAttr {
     enum iconType icon;
     bool forceClear;
     char value[MAX_SIZE];
-    char lastval[MAX_SIZE];
+    char _value[MAX_SIZE];
 } DrawAttr;
 
 typedef struct DrawTime {
