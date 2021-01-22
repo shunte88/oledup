@@ -2,7 +2,7 @@
 
 DeskPi OLED And PMW Fan Controller Service
 
-Firmware OLED and PMW Fan controller for the deskpi pi4 enclosre
+Firmware OLED and PMW Fan controller for the deskpi pi4 enclosure
 
 The front panel of the deskpi is modified to incorporate a small 128x32 SSD1306 OLED
 
@@ -27,17 +27,20 @@ Multiple layers of painters tape is used to protect areas of thepanel that shoul
 
 A hand held router was used for this task but a cleaner approach would be to use a CNC to route the channel.
 
-The deskpi provides an extension riser for the pi's GPIO. Solder thin flexible hookup wires to the 3V3, GND, SLA and SLC pins on the riser. There is just enough room between the riser and the CPU fan to route the wires. Hot glue can be used to secure the wires further or a simple thin plastic shim slid between the riser and the cooler.
+The deskpi provides an extension riser for the pi's GPIO. Solder thin flexible hookup wires to the 3V3, GND, SLA and SLC pins on the riser. There is just enough clearance between the riser and the CPU fan to route the wires. Hot glue can be used to secure the wires further or a simple thin plastic shim slid between the riser and the cooler.  Both methods ensure nothing shorts out in the tight space.
 
 </p>
 
-Solder the hookup wires to the OLED and place it into the slot. Hot glue can be used to secure the screen or a strip of tape, I used a strip of self stick rubber draft excluder cut to fit the routed channel with a 2mm extra around the edge. This blocks any light bleeding from the various LED's on the Pi and the deskpi PCB and helps to cover any mishaps thatmay have occured during routng.
+Solder the hookup wires to the OLED and place it into the routed slot. Hot glue can be used to secure the screen or a strip of tape, a strip of self stick rubber draft excluder cut to fit the routed channel with 2mm extra around the edge. This blocks any light bleeding from the various LED's on the Pi and the deskpi PCB and helps to cover any mishaps that may have occured during routng.
+
+The red LED on the pi is very bright and lights up ~2/3 of the fascia.  The LED may be disabled by adding the appropriate lines to config.txt
 
 ## The Driver
 
-The driver controls the fan and to display system attributes, teperature, load, and atintervals the time.
-Icons reflect the current temperature, fan control, and system memory and disk usage.
-The OLED screen while being 128x32 px is only about 15mm in height, icons and large fonts are used to present information, and a custom font was developed to display network information.  The font is needed to display IP addressesto a maximum width of 15 characters.
+The driver controls the fan and displays various system attributes, temperature, CPU load, and at intervals active IP address.  When attributes are not displayed we show a simple clock.
+As we've limited screen real estate icons reflect the attribute being displayed, current temperature, fan control, and system memory and disk usage.
+The OLED screen while being 128x32 px is only about 15mm in height, thus icons and large fonts are used to present information.  
+A custom font was developed to display network information.  The font is needed to display IP addresses to a maximum width of 15 characters.  A full height skinny font is used.
 
 Install the driver
 
@@ -47,4 +50,4 @@ sudo bash comploy 1
 
 ## TODO
 
-Additional modifications may be made to add a DAC to the enclosure and the screen will be extended to display audio details.
+Additional modifications may be made to add a DAC to the enclosure and the screen modes would be extended to display audio details.
