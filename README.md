@@ -13,9 +13,9 @@ The front panel of the deskpi is modified to incorporate a small 128x32 SSD1306 
 
 The front panel acrylic is routed and polished to incorporate the screen.
 
-Given the acrylic is an opaque grey a small window is developed by routing out a channel on the back of the panel leaving 2mm of material. Take care not to blow through the panel, work a test piece of material adjusting the router depth until the desired transparency is obtained.
+Given the acrylic is an opaque grey a small window is developed by routing out a channel on the back of the panel leaving 2mm of material. Take care not to blow through the panel, work a test piece of material adjusting the router depth until the desired depth and  transparency is obtained.
 
-The channel is then polished to full transparency with wet and dry emery. 1000, 2000, 3000, and 7000 are used and finally polished with Meguiars Mirror Glaze
+The channel is then polished to full transparency with wet and dry emery. 1000, 2000, 3000, and 7000 are used and finally polished with Meguiars Mirror Glaze.  Somewhat overkill but it does the job.
 
 </p>
 <p>
@@ -38,9 +38,13 @@ The red LED on the pi is very bright and lights up ~2/3 of the fascia.  The LED 
 ## The Driver
 
 The driver controls the fan and displays various system attributes, temperature, CPU load, and at intervals active IP address.  When attributes are not displayed we show a simple clock.
+
 As we've limited screen real estate icons reflect the attribute being displayed, current temperature, fan control, and system memory and disk usage.
-The OLED screen while being 128x32 px is only about 15mm in height, thus icons and large fonts are used to present information.  
-A custom font was developed to display network information.  The font is needed to display IP addresses to a maximum width of 15 characters.  A full height skinny font is used.
+
+The OLED screen is 128x32 px and only 15mm in height, thus icons and large fonts are used to present information.  
+
+For the mostpart this works perfectly.  However, a custom font was developed to display network information.  
+The font is needed to display IP addresses to a maximum width of 15 characters.  A full height skinny font is used.
 
 Install the driver
 
